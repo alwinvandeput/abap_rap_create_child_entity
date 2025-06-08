@@ -31,6 +31,9 @@ CLASS lhc_zr_rgdcreatechildproject DEFINITION INHERITING FROM cl_abap_behavior_h
     METHODS ValidateAbapNamespace FOR VALIDATE ON SAVE
       IMPORTING keys FOR Project~ValidateAbapNamespace.
 
+    METHODS GenerateRepositoryObjects FOR MODIFY
+      IMPORTING keys FOR ACTION Project~GenerateRepositoryObjects.
+
     TYPES ts_project TYPE STRUCTURE FOR READ RESULT zr_rgdcreatechildproject.
     TYPES: ts_helper_type   TYPE ts_project,
            ts_helper_type_1 TYPE ts_project.
@@ -834,6 +837,151 @@ CLASS lhc_zr_rgdcreatechildproject IMPLEMENTATION.
 
 *    ENDLOOP.
 
+  ENDMETHOD.
+
+  METHOD GenerateRepositoryObjects.
+
+    READ ENTITIES OF zr_rgdcreatechildproject IN LOCAL MODE
+         ENTITY Project
+         ALL FIELDS
+         WITH CORRESPONDING #( keys )
+         RESULT DATA(lt_projects)
+         " TODO: variable is assigned but never used (ABAP cleaner)
+         FAILED DATA(lt_failed).
+
+    LOOP AT lt_projects
+         ASSIGNING FIELD-SYMBOL(<ls_project>).
+
+      """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+      "Delete
+      SELECT *
+        FROM zr_rgdcrchldprojgenrepobject
+        WHERE ProjectId = @<ls_project>-ProjectId
+        INTO TABLE @DATA(lt_existing_objects).
+
+      IF lt_existing_objects IS NOT INITIAL.
+
+        "Delete from Behavior Definition:
+        MODIFY ENTITIES OF ZR_RgdCreateChildProject IN LOCAL MODE
+
+          "Child Entities:
+          ENTITY GeneratedRepositoryObject
+            DELETE
+              FROM VALUE #(
+                FOR ls_object  IN lt_existing_objects INDEX INTO lv_index
+                (
+                  %tky-GenRepObjId = ls_object-GenRepObjId
+                )
+              )
+
+        MAPPED DATA(delete_mapped)
+        REPORTED DATA(delete_reported)
+        FAILED DATA(delete_failed).
+      ENDIF.
+
+      """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+      "Insert
+      DATA(cr_lf) = cl_abap_char_utilities=>cr_lf.
+
+      DATA lt_source_code_lines TYPE string_table.
+
+      APPEND |CLASS zzap_test DEFINITION.| TO lt_source_code_lines.
+      DO 10000 TIMES.
+        APPEND  |  Line { sy-index }.| TO lt_source_code_lines.
+      ENDDO.
+      APPEND |ENDCLASS.|  TO lt_source_code_lines.
+
+      DATA(lv_line_count) = lines( lt_source_code_lines ).
+
+      DATA lv_source TYPE string.
+      LOOP AT lt_source_code_lines
+        ASSIGNING FIELD-SYMBOL(<lv_line>).
+        IF sy-tabix = 1.
+          lv_source = <lv_line>.
+        ELSE.
+          lv_source = lv_source && cr_lf && <lv_line>.
+        ENDIF.
+      ENDLOOP.
+
+*      DATA(lv_base64_content) = cl_web_http_utility=>encode_x_base64( conv xstring( lv_source ) ).
+
+      DATA ls_object2 TYPE zr_rgdcrchldprojgenrepobject.
+      ls_object2 = VALUE #(
+          "GenRepObjId,
+          "ProjectId,
+          ObjectType      = 'TABL'
+          ObjectName      = 'ZZAP_CLASS'
+          CodeLineCount   = lv_line_count
+          CodeAttachement = CONV xstring( lv_source )
+          CodeMimetype    = 'text/plain'
+          CodeFilename    = |Step 000001 CREATE CLAS_ZZAP_CLASS 2.txt|
+        ).
+
+      DATA(xstring) = cl_abap_conv_codepage=>create_out(
+        codepage = `UTF-8`
+        )->convert( source = lv_source ).
+
+      ls_object2-CodeAttachement = xstring.
+
+      DATA lt_objects TYPE STANDARD TABLE OF zr_rgdcrchldprojgenrepobject.
+      APPEND ls_object2 TO lt_objects.
+
+      MODIFY ENTITIES OF zr_rgdcreatechildproject IN LOCAL MODE
+        ENTITY Project
+          CREATE BY \_GeneratedRepositoryObject
+            FROM VALUE #(
+              "Run
+              (
+                %tky = <ls_project>-%tky
+                %target = VALUE #(
+                  FOR ls_object  IN lt_objects INDEX INTO lv_index
+                  (
+                     %cid                    = |cid{ lv_index }|
+                     ObjectType              = ls_object-ObjectType
+                     %control-ObjectType     = if_abap_behv=>mk-on
+                     ObjectName              = ls_object-ObjectName
+                     %control-ObjectName     = if_abap_behv=>mk-on
+                     CodeLineCount           = ls_object-CodeLineCount
+                     %control-CodeLineCount  = if_abap_behv=>mk-on
+
+                     CodeAttachement          = ls_object-CodeAttachement
+                     %control-CodeAttachement = if_abap_behv=>mk-on
+                     CodeMimetype             = ls_object-CodeMimetype
+                     %control-CodeMimetype    = if_abap_behv=>mk-on
+                     CodeFilename             = ls_object-CodeFilename
+                     %control-CodeFilename    = if_abap_behv=>mk-on
+                  )
+                )
+              )
+            )
+      MAPPED DATA(create_mapped)
+      REPORTED DATA(create_reported)
+      FAILED DATA(create_failed).
+
+    ENDLOOP.
+
+  ENDMETHOD.
+
+ENDCLASS.
+
+CLASS lhc_generatedrepositoryobject DEFINITION INHERITING FROM cl_abap_behavior_handler.
+
+  PRIVATE SECTION.
+
+    METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
+      IMPORTING REQUEST requested_authorizations FOR GeneratedRepositoryObject RESULT result.
+
+    METHODS GetCode FOR MODIFY
+      IMPORTING keys FOR ACTION GeneratedRepositoryObject~GetCode.
+
+ENDCLASS.
+
+CLASS lhc_generatedrepositoryobject IMPLEMENTATION.
+
+  METHOD get_global_authorizations.
+  ENDMETHOD.
+
+  METHOD GetCode.
   ENDMETHOD.
 
 ENDCLASS.

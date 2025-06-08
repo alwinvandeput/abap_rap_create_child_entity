@@ -2,6 +2,7 @@ managed implementation in class ZBP_R_RGD_CREATE_CHILD unique;
 strict ( 2 );
 with draft;
 extensible;
+
 define behavior for ZR_RgdCreateChildProject alias Project
 persistent table zrgd_crt_child
 extensible
@@ -46,6 +47,8 @@ authorization master ( global )
   draft action Resume;
   draft determine action Prepare;
 
+  association _GeneratedRepositoryObject { create; with draft; }
+
   determination SetRootFields on modify { field BoRootCdsEntityName; }
 
   determination FillFieldsOnCreate on modify { create; }
@@ -64,6 +67,7 @@ authorization master ( global )
   action UpdateEmptyDerivedFields result [1] $self;
   action FillByExample result [1] $self;
   action OverwriteChildNames result [1] $self;
+  action GenerateRepositoryObjects;
 
   validation ValidateProject on save { create; update; }
 
@@ -97,4 +101,37 @@ authorization master ( global )
       LastChangedAt             = last_changed_at;
     }
 
+}
+
+
+define behavior for ZR_RgdCrChldProjGenRepObject alias GeneratedRepositoryObject
+persistent table zrgd_gen_rep_obj
+draft table zrgd_gen_rep_obd
+( lock, etag, authorization ) dependent by _Project
+{
+  field ( readonly, numbering : managed )
+  GenRepObjId;
+
+  field ( readonly )
+  ProjectId;
+
+  update;
+  delete;
+
+  association _Project abbreviation Project { with draft; }
+
+  action GetCode;
+
+  mapping for zrgd_gen_rep_obj
+    {
+      GenRepObjId = gen_rep_obj_id;
+      ProjectId   = project_id;
+      ObjectType  = object_type;
+      ObjectName  = object_name;
+      CodeLineCount   = line_count;
+      CodeAttachement = code_attachment;
+      CodeMimetype = code_mimetype;
+      CodeFilename = code_filename;
+
+    }
 }

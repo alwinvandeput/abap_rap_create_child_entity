@@ -52,23 +52,26 @@ annotate view ZR_RgdCreateChildProject with
     },
 
     {
+      id: 'GenRepObjID',
+      label: 'Generated Repository Objects',
+      type: #LINEITEM_REFERENCE,
+      position: 60,
+      targetElement: '_GeneratedRepositoryObject'
+    },
+
+    {
       id: 'AdministrationFG',
       type: #FIELDGROUP_REFERENCE,
       label: 'Administration',
-      position: 50,
+      position: 900,
       targetQualifier: 'AdministrationFG'
     }
-
 
   ]
 
   //Object Page Buttons
   @UI.identification: [
   //- Actions
-  { position: 90,
-    type: #FOR_ACTION,
-    dataAction: 'FillByExample',
-    label: 'Fill Example Data' },
   { position: 10,
     type: #FOR_ACTION,
     dataAction: 'UpdateEmptyDerivedFields',
@@ -77,7 +80,15 @@ annotate view ZR_RgdCreateChildProject with
   { position: 20,
     type: #FOR_ACTION,
     dataAction: 'OverwriteChildNames',
-    label: 'Overwrite Derived Child Fields' }
+    label: 'Overwrite Derived Child Fields' },
+  { position: 30,
+    type: #FOR_ACTION,
+    dataAction: 'GenerateRepositoryObjects',
+    label: 'Generate' },
+  { position: 90,
+    type: #FOR_ACTION,
+    dataAction: 'FillByExample',
+    label: 'Fill Example Data' }
   ]
 
   ProjectId;

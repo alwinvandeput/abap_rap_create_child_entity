@@ -8,5 +8,6 @@
 }
 define service ZRGD_Create_Child_O4_UI
   provider contracts odata_v4_ui {
-  expose ZR_RgdCreateChildProject as Project;
+  expose ZR_RgdCreateChildProject     as Project;
+  expose ZR_RgdCrChldProjGenRepObject as GeneratedRepositoryObject;
 }

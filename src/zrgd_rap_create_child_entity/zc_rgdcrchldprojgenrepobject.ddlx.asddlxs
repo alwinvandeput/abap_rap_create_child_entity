@@ -1,0 +1,73 @@
+@Metadata.layer: #CORE
+@UI: {
+  headerInfo: {
+    typeName: 'Step',
+    typeNamePlural: 'Steps'
+  }
+}
+annotate entity ZR_RgdCrChldProjGenRepObject with
+{
+  @UI.facet: [ {
+    id: 'idIdentification',
+    type: #IDENTIFICATION_REFERENCE,
+    label: 'General',
+    position: 10
+  }
+
+  ]
+
+  //List Report Page Buttons
+  @UI.lineItem: [
+  //- Actions
+  { position: 10,
+    type: #FOR_ACTION,
+    dataAction: 'GetCode',
+    label: 'Set to Done',
+    importance: #HIGH,
+    inline: true
+     }
+  ]
+
+  //Object Page Buttons
+  @UI.identification: [
+  //- Actions
+  { position: 10,
+    type: #FOR_ACTION,
+    dataAction: 'GetCode',
+    label: 'Set to Done',
+    importance: #HIGH }
+  ]
+
+
+  //Child ID
+  @UI.hidden: true
+  GenRepObjId;
+
+  //Parent ID
+  @UI.hidden: true
+  ProjectId;
+
+  @UI.lineItem: [ { position: 30 } ]
+  @UI.identification: [ { position: 30 } ]
+  ObjectType;
+
+  @UI.lineItem: [ { position: 40 } ]
+  @UI.identification: [ { position: 40 } ]
+  ObjectName;
+
+  @UI.identification: [ { position: 50 } ]
+  @UI.lineItem: [ { position: 50 } ]
+  LineCount;
+
+  @UI.identification: [{ position: 80 }]
+  @UI.lineItem: [ { position: 80, cssDefault.width: '14rem' } ]
+  @EndUserText.label: 'Code File'
+  CodeAttachement;
+
+  @UI.hidden: true
+  CodeMimetype;
+
+  @UI.hidden: true
+  CodeFilename;
+
+}
