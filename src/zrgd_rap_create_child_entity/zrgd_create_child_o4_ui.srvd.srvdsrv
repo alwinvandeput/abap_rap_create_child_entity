@@ -1,0 +1,12 @@
+@EndUserText: {
+  label: 'RGP Create Child Entity'
+}
+@ObjectModel: {
+  leadingEntity: {
+    name: 'ZR_RgdCreateChildProject'
+  }
+}
+define service ZRGD_Create_Child_O4_UI
+  provider contracts odata_v4_ui {
+  expose ZR_RgdCreateChildProject as Project;
+}

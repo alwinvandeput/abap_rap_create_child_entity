@@ -1,0 +1,171 @@
+@Metadata.layer: #CORE
+
+@UI: {
+  headerInfo: {
+    typeName: 'Create RAP Child Entity Project',
+    typeNamePlural: 'Create RAP Child Entity Projects',
+    title: {
+      type: #STANDARD,
+      value: 'ChildEntityName' },
+    description: {
+      label: '(Description)',
+      type: #STANDARD,
+      value: 'ChildDbTableName' },
+    typeImageUrl: 'sap-icon://my-sales-order'
+  }
+}
+
+annotate view ZR_RgdCreateChildProject with
+{
+  @UI.facet: [ 
+
+    {
+      id: 'BasicSettingsFG',
+      type: #FIELDGROUP_REFERENCE,
+      label: 'Basic',
+      position: 10,
+      targetQualifier: 'BasicSettingsFG'
+    },
+
+    {
+      id: 'RootEntityFG',
+      type: #FIELDGROUP_REFERENCE,
+      label: 'Root Entity',
+      position: 20,
+      targetQualifier: 'RootEntityFG'
+    },
+
+    {
+      id: 'ParentEntityFG',
+      type: #FIELDGROUP_REFERENCE,
+      label: 'Parent Entity',
+      position: 30,
+      targetQualifier: 'ParentEntityFG'
+    },
+
+    {
+      id: 'ChildEntityFG',
+      type: #FIELDGROUP_REFERENCE,
+      label: 'Child Entity',
+      position: 40,
+      targetQualifier: 'ChildEntityFG'
+    },
+
+    {
+      id: 'AdministrationFG',
+      type: #FIELDGROUP_REFERENCE,
+      label: 'Administration',
+      position: 50,
+      targetQualifier: 'AdministrationFG'
+    }
+
+
+  ]
+
+  //Object Page Buttons
+  @UI.identification: [
+  //- Actions
+  { position: 90,
+    type: #FOR_ACTION,
+    dataAction: 'FillByExample',
+    label: 'Fill Example Data' },
+  { position: 10,
+    type: #FOR_ACTION,
+    dataAction: 'UpdateEmptyDerivedFields',
+    label: 'Update Derived Fields',
+    importance: #HIGH },
+  { position: 20,
+    type: #FOR_ACTION,
+    dataAction: 'OverwriteChildNames',
+    label: 'Overwrite Derived Child Fields' }
+  ]
+
+  ProjectId;
+
+
+  //Basic Settings
+  @UI.fieldGroup: [{ qualifier: 'BasicSettingsFG',  position: 20 } ]
+  @UI.lineItem: [ { position: 02, cssDefault.width: '2rem' } ]
+  AbapNamespace;
+
+  @UI.fieldGroup: [{ qualifier: 'BasicSettingsFG',  position: 30 } ]
+  @UI.lineItem: [ { position: 05, cssDefault.width: '4rem' } ]
+  ModuleAbbreviation;
+
+  @UI.fieldGroup: [{ qualifier: 'BasicSettingsFG',  position: 40 } ]
+  ParentIsRootInd;
+
+  //UseUiLayerInd;
+  
+  //UseApiLayerInd;
+  
+  @UI.fieldGroup: [{ qualifier: 'BasicSettingsFG',  position: 42 } ]
+  //Enkel actief, als UseUiLayerInd actief is.
+  UseProjectionLayerInd;
+
+  //------------------------------------------------------------
+  //Root Entity
+
+  @UI.fieldGroup: [{ qualifier: 'RootEntityFG',  position: 45 } ]
+  @UI.lineItem: [ { position: 19, cssDefault.width: '10rem' } ]
+  BoRootCdsEntityName;
+  
+  @UI.fieldGroup: [{ qualifier: 'RootEntityFG',  position: 50 } ]
+  RootRapAliasName;
+  
+  @UI.fieldGroup: [{ qualifier: 'RootEntityFG',  position: 60 } ]
+  RootEnttHasBehaviorDefInd;
+
+
+  //------------------------------------------------------------
+  //Parent Entity
+  @UI.fieldGroup: [{ qualifier: 'ParentEntityFG',  position: 10 } ]
+  @UI.lineItem: [ { position: 18, cssDefault.width: '12rem' } ]
+  BoParentCdsEntityName;
+  
+  @UI.fieldGroup: [{ qualifier: 'ParentEntityFG',  position: 20 } ]
+  ParentRapAliasName;
+  
+  @UI.fieldGroup: [{ qualifier: 'ParentEntityFG',  position: 30 } ]
+  ParentHasBehaviorDefInd;
+
+  //------------------------------------------------------------
+  //Child Entity
+  @UI.fieldGroup: [{ qualifier: 'ChildEntityFG',  position: 80 } ]
+  @UI.lineItem: [ { position: 10 } ]
+  ChildDbTableName;
+
+  @UI.fieldGroup: [{ qualifier: 'ChildEntityFG',  position: 90 } ]
+  ChildDraftDbTableName;
+
+  @UI.fieldGroup: [{ qualifier: 'ChildEntityFG',  position: 100 } ]
+  @UI.lineItem: [ { position: 15, cssDefault.width: '10rem' } ]
+  ChildEntityName;
+
+  @UI.fieldGroup: [{ qualifier: 'ChildEntityFG',  position: 110 } ]
+  ChildRapAliasName;
+
+  @UI.fieldGroup: [{ qualifier: 'ChildEntityFG',  position: 120 } ]
+  BoChildCdsEntityName;
+
+  @UI.fieldGroup: [{ qualifier: 'ChildEntityFG',  position: 130 } ]
+  MetadataExtensionName;
+
+  //------------------------------------------------------------
+  @UI.fieldGroup: [{ qualifier: 'AdministrationFG',  position: 10 } ]
+  @UI.lineItem: [ { position: 20 } ]
+  LocalCreatedBy;
+
+  @UI.lineItem: [ { position: 21 } ]
+  @UI.fieldGroup: [{ qualifier: 'AdministrationFG',  position: 20 } ]
+  LocalCreatedAt;
+
+  @UI.fieldGroup: [{ qualifier: 'AdministrationFG',  position: 30 } ]
+  LocalLastChangedBy;
+
+  @UI.fieldGroup: [{ qualifier: 'AdministrationFG',  position: 40 } ]
+  LocalLastChangedAt;
+
+  @UI.fieldGroup: [{ qualifier: 'AdministrationFG',  position: 50 } ]
+  LastChangedAt;
+}

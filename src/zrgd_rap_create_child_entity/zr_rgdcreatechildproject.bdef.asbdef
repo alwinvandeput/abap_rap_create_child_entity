@@ -1,0 +1,100 @@
+managed implementation in class ZBP_R_RGD_CREATE_CHILD unique;
+strict ( 2 );
+with draft;
+extensible;
+define behavior for ZR_RgdCreateChildProject alias Project
+persistent table zrgd_crt_child
+extensible
+draft table zrgd_crt_child_d
+etag master LocalLastChangedAt
+lock master total etag LastChangedAt
+authorization master ( global )
+
+{
+  field ( readonly, numbering : managed )
+  ProjectId;
+
+  field ( readonly )
+  RootEnttHasBehaviorDefInd,
+  ParentHasBehaviorDefInd;
+
+  field ( mandatory )
+  AbapNamespace,
+  ParentRapAliasName,
+  BoParentCdsEntityName,
+  ChildEntityName,
+  ChildRapAliasName,
+  ChildDbTableName,
+  ChildDraftDbTableName,
+  BoChildCdsEntityName,
+  MetadataExtensionName;
+
+  field ( readonly )
+  LocalCreatedBy,
+  LocalCreatedAt,
+  LocalLastChangedBy,
+  LocalLastChangedAt,
+  LastChangedAt;
+
+  create;
+  update;
+  delete;
+
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Edit;
+  draft action Resume;
+  draft determine action Prepare;
+
+  determination SetRootFields on modify { field BoRootCdsEntityName; }
+
+  determination FillFieldsOnCreate on modify { create; }
+
+  side effects
+  {
+    field BoRootCdsEntityName affects field RootRapAliasName, field RootEnttHasBehaviorDefInd;
+    //    field Suffix affects field * , entity _Node ;
+    //    field Prefix affects field * , entity _Node;
+    //    field AddIViewBasic affects field * , entity _Node;
+    //    field PublishService affects field * , entity _Node;
+    //    field AddSAPObjectType affects field * , entity _Node;
+  }
+
+
+  action UpdateEmptyDerivedFields result [1] $self;
+  action FillByExample result [1] $self;
+  action OverwriteChildNames result [1] $self;
+
+  validation ValidateProject on save { create; update; }
+
+  validation ValidateAbapNamespace on save { field AbapNamespace; }
+
+  mapping for zrgd_crt_child corresponding extensible
+    {
+      ProjectId                 = project_id;
+      AbapNamespace             = abap_namespace;
+      ModuleAbbreviation        = module_abbreviation;
+      ParentIsRootInd           = parent_is_root_ind;
+      RootRapAliasName          = root_rap_alias_name;
+      RootEntityName            = root_entity_name;
+      BoRootCdsEntityName       = bo_root_cds_entity_name;
+      RootEnttHasBehaviorDefInd = root_has_behavior_def_ind;
+      ParentRapAliasName        = parent_rap_alias_name;
+      ParentEntityName          = parent_entity_name;
+      ParentHasBehaviorDefInd   = parent_has_behavior_def_ind;
+      BoParentCdsEntityName     = bo_parent_cds_entity_name;
+      ChildEntityName           = child_entity_name;
+      ChildRapAliasName         = child_rap_alias_name;
+      ChildDbTableName          = child_db_table_name;
+      ChildDraftDbTableName     = child_draft_db_table_name;
+      BoChildCdsEntityName      = bo_child_cds_entity_name;
+      UseProjectionLayerInd     = use_projection_layer_ind;
+      MetadataExtensionName     = metadata_extension_name;
+      LocalCreatedBy            = local_created_by;
+      LocalCreatedAt            = local_created_at;
+      LocalLastChangedBy        = local_last_changed_by;
+      LocalLastChangedAt        = local_last_changed_at;
+      LastChangedAt             = last_changed_at;
+    }
+
+}
